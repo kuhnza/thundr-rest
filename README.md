@@ -92,13 +92,18 @@ class MyController {
 ```
 
 This isn't very DRY and also has some shortcomings from a REST standpoint such as:
+
 1. It doesn't support selecting format via Accept headers.
 2. Requires checking for a callback parameter on every JSON controller method if you wish to support JSONP.
 3. Exceptions thrown will be rendered using the container's default error templates.
+ 
+thundr-rest solves this by separating the serialization method from the controller and delegating decisions
+about which format to render to the underlying `RestViewResolver`.
 
 ## How it works
 
 thundr-rest uses main two constructs to address the shortcomings above:
+
 1. The `@Rest` annotation, and;
 2. The `RestView` controller return type.
 
@@ -123,7 +128,20 @@ new RestView(myData, HttpServletResponse.SC_CREATED, "UTF-8")
 The `RestViewResolver` (which is automatically registered in the thundr injection context when you include the module)
 then handles all the details about how the data should be serialized and returned to the user.
 
-## Configuring additonal serializers
+## Serializers
+
+### JsonSerializer
+
+The JSON serializer uses the [Google GSON](https://code.google.com/p/google-gson/) library under the hood. This means
+you can modify the output of the JSON serializer using GSON annotations on your data objects that you insert in to
+the `RestView`.
+
+### XmlSerializer
+
+The XML serializer uses [JAXB](https://jaxb.java.net/) to serialize data objects. Similar to the JSON serializer this
+means that you can modify the serializer by using JAXB annotations on your data objects.
+
+### Configuring additonal serializers
 
 In the event that you wish to support additional serialization formats it's easy to add your own. Say you wanted to make
 your endpoints browsable using HTML. In your application `InjectionConfiguration#configure` method add the following:
@@ -141,4 +159,4 @@ Now when the `Accept` header contains "text/html" or the `format` parameter is "
 used.
 
 --------------
-thundr-rest - Copyright (C) 2013 3wks
+thundr-rest - Copyright &copy; 2013 3wks
