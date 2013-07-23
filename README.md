@@ -93,7 +93,7 @@ class MyController {
 
 This isn't very DRY and also has some shortcomings from a REST standpoint such as:
 
-1. It doesn't support selecting format via Accept headers.
+1. It doesn't support selecting format via Accept headers (i.e. content negotiation).
 2. Requires checking for a callback parameter on every JSON controller method if you wish to support JSONP.
 3. Exceptions thrown will be rendered using the container's default error templates.
  
