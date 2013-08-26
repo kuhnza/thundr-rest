@@ -22,9 +22,9 @@ import java.util.Map;
 
 public interface Serializer {
 
-	String marshall(Object object);
+	String marshal(Object object);
 
-	String marshall(Object object, Map<String, String> options);
+	String marshal(Object object, Map<String, String> options);
 
-	<T> T unmarshall(Class<T> type, String object);
+	<T> T unmarshal(Class<T> type, String object);
 }

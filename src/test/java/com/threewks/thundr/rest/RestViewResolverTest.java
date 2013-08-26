@@ -18,8 +18,6 @@
 package com.threewks.thundr.rest;
 
 
-import com.threewks.thundr.exception.BaseException;
-import com.threewks.thundr.http.exception.HttpStatusException;
 import com.threewks.thundr.rest.dto.MessageDto;
 import com.threewks.thundr.rest.exception.NotAcceptableException;
 import com.threewks.thundr.rest.serializer.JsonSerializer;
@@ -34,13 +32,13 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 public class RestViewResolverTest {
 	@Rule
@@ -191,7 +189,7 @@ public class RestViewResolverTest {
 		Serializer serializer = spy(new XmlSerializer());
 		Object object = new Object();
 		doThrow(new RuntimeException("Intentional"))
-				.when(serializer).marshall(Mockito.eq(object), Mockito.anyMapOf(String.class, String.class));
+				.when(serializer).marshal(Mockito.eq(object), Mockito.anyMapOf(String.class, String.class));
 
 		viewResolver = new RestViewResolver();
 		viewResolver.addSerializer(MimeTypes.MIME_APPLICATION_XML, serializer);

@@ -19,10 +19,20 @@ package com.threewks.thundr.rest.serializer;
 
 import org.joda.time.DateTime;
 
-public class ClassWithDateTimeField {
-	public DateTime dateTime;
+public class ClassWithDateTimeGetter {
+	public DateTime dateTime = null;
 
-	public ClassWithDateTimeField(DateTime dateTime) {
+	public ClassWithDateTimeGetter() { }
+
+	public ClassWithDateTimeGetter(DateTime dateTime) {
+		this.dateTime = dateTime;
+	}
+
+	public DateTime getDateTime() {
+		return dateTime;
+	}
+
+	public void setDateTime(DateTime dateTime) {
 		this.dateTime = dateTime;
 	}
 
@@ -31,7 +41,7 @@ public class ClassWithDateTimeField {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		ClassWithDateTimeField that = (ClassWithDateTimeField) o;
+		ClassWithDateTimeGetter that = (ClassWithDateTimeGetter) o;
 
 		if (dateTime != null ? !dateTime.equals(that.dateTime) : that.dateTime != null) return false;
 

@@ -20,16 +20,19 @@ package com.threewks.thundr.rest.serializer;
 
 import com.google.common.collect.Maps;
 import com.threewks.thundr.rest.dto.MessageDto;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 public class XmlSerializerTest {
 
-	private static String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><messages><message>hello</message></messages>";
+	private static String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messages><message>hello</message></messages>";
 	private XmlSerializer serializer;
 
 	@Before
@@ -39,7 +42,7 @@ public class XmlSerializerTest {
 
 	@Test
 	public void testMarshal() {
-		String result = serializer.marshall(new MessageDto("hello"));
+		String result = serializer.marshal(new MessageDto("hello"));
 		assertEquals(xml, result);
 	}
 
@@ -48,13 +51,13 @@ public class XmlSerializerTest {
 		Map<String, String> options = Maps.newHashMap();
 		options.put("rootElementName", "root");
 
-		String result = serializer.marshall(new MessageDto("hello"), options);
+		String result = serializer.marshal(new MessageDto("hello"), options);
 		assertEquals(xml.replace("messages", "root"), result);
 	}
 
 	@Test
-	public void testUnmarshall() {
-		MessageDto dto = serializer.unmarshall(MessageDto.class, xml);
+	public void testUnmarshal() {
+		MessageDto dto = serializer.unmarshal(MessageDto.class, xml);
 		assertEquals("hello", dto.message);
 	}
 }

@@ -18,8 +18,23 @@
 package com.threewks.thundr.rest.serializer;
 
 
-import com.threewks.thundr.rest.parser.JsonParser;
+import net.sf.ezmorph.ObjectMorpher;
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import net.sf.json.JsonConfig;
+import net.sf.json.filters.OrPropertyFilter;
+import net.sf.json.processors.JsonValueProcessor;
+import net.sf.json.util.JSONUtils;
+import net.sf.json.util.PropertyFilter;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 public class JsonSerializer implements Serializer {
@@ -30,13 +45,13 @@ public class JsonSerializer implements Serializer {
 	}
 
 	@Override
-	public String marshall(Object object) {
-		return marshall(object, null);
+	public String marshal(Object object) {
+		return marshal(object, null);
 	}
 
 	@Override
-	public String marshall(Object object, Map<String, String> options) {
-		String output = JsonParser.toJson(object);
+	public String marshal(Object object, Map<String, String> options) {
+		String output = toJson(object).toString();
 
 		// If callback option is present wrap response in function call ala JSONP
 		if (options != null && options.containsKey(OPTION_CALLBACK)) {
@@ -45,8 +60,81 @@ public class JsonSerializer implements Serializer {
 		return output;
 	}
 
+	protected JSON toJson(Object object) {
+		JsonConfig config = new JsonConfig();
+		// prevent serialization of properties with @Ignore or null values.
+		OrPropertyFilter filter = new OrPropertyFilter(new IgnoreAnnotationPropertyFilter(), new NullValuePropertyFilter());
+		config.setJsonPropertyFilter(filter);
+		config.registerJsonValueProcessor(DateTime.class, new DateTimeValueProcessor());
+		return JSONSerializer.toJSON(object, config);
+	}
+
 	@Override
-	public <T> T unmarshall(Class<T> type, String object) {
-		return JsonParser.fromJson(object, type);
+	public <T> T unmarshal(Class<T> type, String json) {
+		JsonConfig config = new JsonConfig();
+		config.registerJsonValueProcessor(DateTime.class, new DateTimeValueProcessor());
+		config.setRootClass(type);
+
+		JSONUtils.getMorpherRegistry().registerMorpher(new DateTimeMorpher());
+		JSONObject jsonObject = JSONObject.fromObject(json, config);
+		return (T) JSONObject.toBean(jsonObject, config);
+	}
+
+	private static class DateTimeMorpher implements ObjectMorpher {
+
+		private static final DateTimeFormatter DateTimeFormatter = ISODateTimeFormat.dateTime();
+
+		@Override
+		public Object morph(Object o) {
+			return DateTime.parse(o.toString(), DateTimeFormatter);
+		}
+
+		@Override
+		public Class morphsTo() {
+			return DateTime.class;
+		}
+
+		@Override
+		public boolean supports(Class aClass) {
+			return aClass.isAssignableFrom(String.class);
+		}
+	}
+
+	private static class DateTimeValueProcessor implements JsonValueProcessor {
+		@Override
+		public Object processArrayValue(Object o, JsonConfig jsonConfig) {
+			return ObjectUtils.toString(o, null);
+		}
+
+		@Override
+		public Object processObjectValue(String s, Object o, JsonConfig jsonConfig) {
+			return ObjectUtils.toString(o, null);
+		}
+	}
+
+	private static class IgnoreAnnotationPropertyFilter implements PropertyFilter {
+		@Override
+		public boolean apply(Object source, String name, Object value) {
+			try {
+				PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(source, name);
+				Method m = PropertyUtils.getReadMethod(descriptor);
+
+				if (m.isAnnotationPresent(Ignore.class)) {
+					return true;
+				}
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+
+			return false;
+		}
+	}
+
+	private static class NullValuePropertyFilter implements PropertyFilter {
+		@Override
+		public boolean apply(Object source, String name, Object value) {
+			return value == null;
+		}
 	}
 }

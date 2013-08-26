@@ -19,8 +19,6 @@ package com.threewks.thundr.rest;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.threewks.thundr.configuration.ConfigurationException;
-import com.threewks.thundr.http.exception.HttpStatusException;
 import com.threewks.thundr.logger.Logger;
 import com.threewks.thundr.rest.dto.ErrorDto;
 import com.threewks.thundr.rest.exception.NotAcceptableException;
@@ -119,11 +117,11 @@ public class RestViewResolver implements ViewResolver<RestView> {
 		}
 
 		try {
-			return serializer.marshall(output, options);
+			return serializer.marshal(output, options);
 		} catch (Throwable t) {
 			Logger.error("Unhandled exception when serializing output object in RestViewResolver: %s",
 					ExceptionUtils.getStackTrace(t));
-			return serializer.marshall(new ErrorDto(t.getMessage()));
+			return serializer.marshal(new ErrorDto(t.getMessage()));
 		}
 	}
 

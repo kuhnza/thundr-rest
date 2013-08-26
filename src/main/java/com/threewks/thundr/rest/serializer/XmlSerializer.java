@@ -18,87 +18,77 @@
 package com.threewks.thundr.rest.serializer;
 
 
-import com.google.common.collect.Maps;
-import com.threewks.thundr.rest.RestException;
-import org.apache.commons.io.IOUtils;
+import net.sf.json.JSON;
+import net.sf.json.xml.XMLSerializer;
 
-import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.namespace.QName;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
-public class XmlSerializer implements Serializer {
+public class XmlSerializer extends JsonSerializer implements Serializer {
 
 	public static final String OPTION_ROOT_ELEMENT_NAME = "rootElementName";
 
-	private static ConcurrentMap<Class, JAXBContext> jaxbContextCache = Maps.newConcurrentMap();
-
 	@Override
-	public String marshall(Object object) {
-		return marshall(object, null);
+	public String marshal(Object object) {
+		return marshal(object, null);
 	}
 
-	@Override
-	public String marshall(Object object, Map<String, String> options) {
-		StringWriter sw = new StringWriter();
+	protected String toXml(JSON json, String rootElement) {
+		XMLSerializer xmlSerializer = new XMLSerializer();
+		xmlSerializer.setRootName(rootElement);
+		xmlSerializer.setElementName("element");
+		xmlSerializer.setTypeHintsEnabled(false);
+		xmlSerializer.setTypeHintsCompatibility(false);
 
+		// clean up line separators leftover from xom serialization
+		return cleanLineSeparators(xmlSerializer.write(json));
+	}
+
+	private String cleanLineSeparators(String xml) {
 		try {
-			Class outputType = object.getClass();
-			JAXBContext context = getJaxbContext(outputType);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
-			marshaller.setAdapter(new DateTimeAdapter());
+			BufferedReader reader = new BufferedReader(new StringReader(xml));
+			StringWriter out = new StringWriter();
+			BufferedWriter writer = new BufferedWriter(out);
+			String line = reader.readLine();
 
-			if (options != null && options.containsKey(OPTION_ROOT_ELEMENT_NAME)) {
-				// Root element option overrides XmlRootElement annotation
-				String rootElementName = options.get(OPTION_ROOT_ELEMENT_NAME);
-				JAXBElement element = new JAXBElement(new QName(null, rootElementName), outputType, object);
-				marshaller.marshal(element, sw);
-			} else if (!outputType.isAnnotationPresent(XmlRootElement.class)) {
-				// Where root element is missing, substitute with class name
-				String rootElementName = outputType.getName();
-				JAXBElement element = new JAXBElement(new QName(null, rootElementName), outputType, object);
-				marshaller.marshal(element, sw);
-			} else {
-				marshaller.marshal(object, sw);
+			while (line != null) {
+				writer.write(line);
+				line = reader.readLine();
+				if (line != null) {
+					writer.newLine();
+				}
 			}
 
-			return sw.toString();
-		} catch (JAXBException e) {
-			throw new RestException(e, "Error serializing to XML");
+			writer.flush();
+			return out.toString();
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T unmarshall(Class<T> type, String object) {
-		try {
-			JAXBContext context = getJaxbContext(type);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			return (T) unmarshaller.unmarshal(IOUtils.toInputStream(object));
-		} catch (JAXBException e) {
-			throw new RestException(e, "Error deserializing from XML");
+	public String marshal(Object object, Map<String, String> options) {
+		Class<?> type = object.getClass();
+		String rootElement = type.getName();
+
+		if (options != null && options.containsKey(OPTION_ROOT_ELEMENT_NAME)) {
+			// Root element option overrides XmlRootElement annotation
+			rootElement = options.get(OPTION_ROOT_ELEMENT_NAME);
 		}
+		else if (type.isAnnotationPresent(XmlRootElement.class)) {
+			rootElement = type.getAnnotation(XmlRootElement.class).name();
+		}
+
+		JSON json = toJson(object);
+		return toXml(json, rootElement);
 	}
 
-	private <T> JAXBContext getJaxbContext(Class<T> type) {
-		JAXBContext context = jaxbContextCache.get(type);
-		if (context != null) {
-			return context;
-		}
-
-		try {
-			context = JAXBContext.newInstance(type);
-			JAXBContext last = jaxbContextCache.putIfAbsent(type, context);
-			if (last != null) {
-				context = last;
-			}
-		} catch (JAXBException e) {
-			throw new RestException(e);
-		}
-
-		return context;
+	@Override
+	public <T> T unmarshal(Class<T> type, String xml) {
+		XMLSerializer serializer = new XMLSerializer();
+		JSON json = serializer.read(xml);
+		return super.unmarshal(type, json.toString());
 	}
 }
