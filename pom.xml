@@ -11,7 +11,7 @@
 
 	<artifactId>thundr-rest</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 
 	<name>thundr-rest</name>
 	<url>http://github.com/3wks/thundr-rest/</url>
