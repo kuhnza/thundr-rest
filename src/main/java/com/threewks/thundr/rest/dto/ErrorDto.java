@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "error")
 public class ErrorDto {
 
-	@XmlElement
-	@SerializedName("error")
 	public String message;
 
 	public ErrorDto() {
@@ -36,5 +34,9 @@ public class ErrorDto {
 
 	public ErrorDto(String message) {
 		this.message = message;
+	}
+
+	public String getError() {
+		return this.message;
 	}
 }
