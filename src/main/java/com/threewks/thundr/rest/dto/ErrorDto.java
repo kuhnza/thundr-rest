@@ -18,9 +18,6 @@
 package com.threewks.thundr.rest.dto;
 
 
-import com.google.gson.annotations.SerializedName;
-
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "error")
