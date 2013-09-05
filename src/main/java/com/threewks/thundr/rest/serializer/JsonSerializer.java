@@ -117,11 +117,12 @@ public class JsonSerializer implements Serializer {
 		public boolean apply(Object source, String name, Object value) {
 			try {
 				PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(source, name);
-				Method m = PropertyUtils.getReadMethod(descriptor);
-
-				if (m.isAnnotationPresent(Ignore.class)) {
-					return true;
-				}
+                if(descriptor != null){
+                    Method m = PropertyUtils.getReadMethod(descriptor);
+                    if (m.isAnnotationPresent(Ignore.class)) {
+                        return true;
+                    }
+                }
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);

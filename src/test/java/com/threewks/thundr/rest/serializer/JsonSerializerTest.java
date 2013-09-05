@@ -23,6 +23,9 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -79,4 +82,37 @@ public class JsonSerializerTest {
 		MessageDto message = serializer.unmarshal(MessageDto.class, json);
 		assertThat(message.message, is("hello"));
 	}
+
+
+    @Test
+    public void testMarshalMap(){
+
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("message","hello");
+        List<String> contentList = new ArrayList<String>();
+        contentList.add("one");
+        contentList.add("two");
+        contentList.add("three");
+        map.put("content",contentList);
+
+        Map<String, String> options = Maps.newHashMap();
+        String marshaled = serializer.marshal(map,options);
+
+        assertThat(marshaled, is("{\"content\":[\"one\",\"two\",\"three\"],\"message\":\"hello\"}"));
+    }
+
+    @Test
+    public void testMarshalList(){
+
+        List<String> contentList = new ArrayList<String>();
+        contentList.add("one");
+        contentList.add("two");
+        contentList.add("three");
+
+        Map<String, String> options = Maps.newHashMap();
+        String marshaled = serializer.marshal(contentList,options);
+
+        assertThat(marshaled, is("[\"one\",\"two\",\"three\"]"));
+    }
+
 }
