@@ -1,8 +1,10 @@
-# thundr-rest
+# Thundr REST
 
-*thundr-rest* is a [thundr](http://3wks.github.io/thundr/) module which makes creating RESTful endpoints within a
+*Thundr REST* is a [thundr](http://3wks.github.io/thundr/) module which makes creating RESTful endpoints within a
 thundr app relatively painless. thundr-rest neatly separates the data (i.e. your object) being returned from the
 serialization format (e.g. JSON, XML etc.).
+
+[![Build Status](https://travis-ci.org/kuhnza/thundr-rest.png)](https://travis-ci.org/kuhnza/thundr-rest)
 
 ## Quick start
 
