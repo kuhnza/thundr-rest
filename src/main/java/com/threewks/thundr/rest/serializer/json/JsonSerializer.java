@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.threewks.thundr.rest.serializer;
+package com.threewks.thundr.rest.serializer.json;
 
 
-import net.sf.ezmorph.ObjectMorpher;
+import com.threewks.thundr.rest.serializer.Ignore;
+import com.threewks.thundr.rest.serializer.Serializer;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -30,8 +31,6 @@ import net.sf.json.util.PropertyFilter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -60,15 +59,6 @@ public class JsonSerializer implements Serializer {
 		return output;
 	}
 
-	protected JSON toJson(Object object) {
-		JsonConfig config = new JsonConfig();
-		// prevent serialization of properties with @Ignore or null values.
-		OrPropertyFilter filter = new OrPropertyFilter(new IgnoreAnnotationPropertyFilter(), new NullValuePropertyFilter());
-		config.setJsonPropertyFilter(filter);
-		config.registerJsonValueProcessor(DateTime.class, new DateTimeValueProcessor());
-		return JSONSerializer.toJSON(object, config);
-	}
-
 	@Override
 	public <T> T unmarshal(Class<T> type, String json) {
 		JsonConfig config = new JsonConfig();
@@ -80,24 +70,13 @@ public class JsonSerializer implements Serializer {
 		return (T) JSONObject.toBean(jsonObject, config);
 	}
 
-	private static class DateTimeMorpher implements ObjectMorpher {
-
-		private static final DateTimeFormatter DateTimeFormatter = ISODateTimeFormat.dateTime();
-
-		@Override
-		public Object morph(Object o) {
-			return DateTime.parse(o.toString(), DateTimeFormatter);
-		}
-
-		@Override
-		public Class morphsTo() {
-			return DateTime.class;
-		}
-
-		@Override
-		public boolean supports(Class aClass) {
-			return aClass.isAssignableFrom(String.class);
-		}
+	protected JSON toJson(Object object) {
+		JsonConfig config = new JsonConfig();
+		// prevent serialization of properties with @Ignore or null values.
+		OrPropertyFilter filter = new OrPropertyFilter(new IgnoreAnnotationPropertyFilter(), new NullValuePropertyFilter());
+		config.setJsonPropertyFilter(filter);
+		config.registerJsonValueProcessor(DateTime.class, new DateTimeValueProcessor());
+		return JSONSerializer.toJSON(object, config);
 	}
 
 	private static class DateTimeValueProcessor implements JsonValueProcessor {

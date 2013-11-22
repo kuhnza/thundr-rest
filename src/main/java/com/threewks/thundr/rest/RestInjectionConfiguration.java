@@ -22,8 +22,8 @@ import com.threewks.thundr.injection.InjectionConfiguration;
 import com.threewks.thundr.injection.UpdatableInjectionContext;
 import com.threewks.thundr.rest.intercept.Rest;
 import com.threewks.thundr.rest.intercept.RestActionInterceptor;
-import com.threewks.thundr.rest.serializer.JsonSerializer;
-import com.threewks.thundr.rest.serializer.XmlSerializer;
+import com.threewks.thundr.rest.serializer.json.JsonSerializer;
+import com.threewks.thundr.rest.serializer.xml.XmlSerializer;
 import com.threewks.thundr.view.ViewResolverRegistry;
 import jodd.util.MimeTypes;
 

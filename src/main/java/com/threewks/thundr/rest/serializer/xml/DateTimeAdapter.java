@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.threewks.thundr.rest.serializer;
+package com.threewks.thundr.rest.serializer.xml;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -24,16 +24,17 @@ import org.joda.time.format.ISODateTimeFormat;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class DateTimeAdapter extends XmlAdapter<String, DateTime> {
-	private static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime(); // .forPattern(DATE_TIME_FORMAT);
+	private static final DateTimeFormatter DateTimeFormatter = ISODateTimeFormat.dateTime(); // .forPattern(DATE_TIME_FORMAT);
+	private static final DateTimeFormatter DateTimeParser = ISODateTimeFormat.dateTimeParser().withOffsetParsed();
 
 	@Override
 	public String marshal(DateTime dateTime) throws Exception {
-		return dateTime.toString();
+		return dateTime.toString(DateTimeFormatter);
 	}
 
 	@Override
 	public DateTime unmarshal(String string) throws Exception {
-		return DateTime.parse(string, dateTimeFormatter);
+		return DateTimeParser.parseDateTime(string);
 	}
 
 }

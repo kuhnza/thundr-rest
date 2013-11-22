@@ -20,9 +20,9 @@ package com.threewks.thundr.rest;
 
 import com.threewks.thundr.rest.dto.MessageDto;
 import com.threewks.thundr.rest.exception.NotAcceptableException;
-import com.threewks.thundr.rest.serializer.JsonSerializer;
+import com.threewks.thundr.rest.serializer.json.JsonSerializer;
 import com.threewks.thundr.rest.serializer.Serializer;
-import com.threewks.thundr.rest.serializer.XmlSerializer;
+import com.threewks.thundr.rest.serializer.xml.XmlSerializer;
 import com.threewks.thundr.test.mock.servlet.MockHttpServletRequest;
 import com.threewks.thundr.test.mock.servlet.MockHttpServletResponse;
 import jodd.util.MimeTypes;

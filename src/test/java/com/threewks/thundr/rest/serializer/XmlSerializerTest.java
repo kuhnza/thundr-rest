@@ -20,13 +20,16 @@ package com.threewks.thundr.rest.serializer;
 
 import com.google.common.collect.Maps;
 import com.threewks.thundr.rest.dto.MessageDto;
-import org.hamcrest.Matchers;
+import com.threewks.thundr.rest.serializer.xml.XmlSerializer;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.nio.charset.Charset;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
@@ -53,6 +56,21 @@ public class XmlSerializerTest {
 
 		String result = serializer.marshal(new MessageDto("hello"), options);
 		assertEquals(xml.replace("messages", "root"), result);
+	}
+
+	@Test
+	public void testMarshalAndUnmarshalWithDateTimeGetter() {
+		DateTime dateTime = ISODateTimeFormat.dateTimeParser().withOffsetParsed().parseDateTime("2013-07-10T15:37:58.340+02:00");
+		ClassWithDateTimeGetter myObject = new ClassWithDateTimeGetter(dateTime);
+
+		Map<String, String> options = Maps.newHashMap();
+		options.put("rootElementName", "root");
+
+		String marshaled = serializer.marshal(myObject, options);
+		assertThat(marshaled, is("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root><dateTime>2013-07-10T15:37:58.340+02:00</dateTime></root>"));
+
+		ClassWithDateTimeGetter unmarshaled = serializer.unmarshal(ClassWithDateTimeGetter.class, marshaled);
+		assertThat(unmarshaled, equalTo(myObject));
 	}
 
 	@Test

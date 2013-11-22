@@ -19,7 +19,9 @@ package com.threewks.thundr.rest.serializer;
 
 import com.google.common.collect.Maps;
 import com.threewks.thundr.rest.dto.MessageDto;
+import com.threewks.thundr.rest.serializer.json.JsonSerializer;
 import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class JsonSerializerTest {
@@ -51,13 +54,14 @@ public class JsonSerializerTest {
 
 	@Test
 	public void testMarshalAndUnmarshalWithDateTimeGetter() {
-		ClassWithDateTimeGetter myObject = new ClassWithDateTimeGetter(new DateTime("2013-07-10T15:37:58.340+10:00"));
+		DateTime dateTime = ISODateTimeFormat.dateTimeParser().withOffsetParsed().parseDateTime("2013-07-10T15:37:58.340+02:00");
+		ClassWithDateTimeGetter myObject = new ClassWithDateTimeGetter(dateTime);
 
 		String marshaled = serializer.marshal(myObject);
-		assertThat(marshaled, is("{\"dateTime\":\"2013-07-10T15:37:58.340+10:00\"}"));
+		assertThat(marshaled, is("{\"dateTime\":\"2013-07-10T15:37:58.340+02:00\"}"));
 
 		ClassWithDateTimeGetter unmarshaled = serializer.unmarshal(ClassWithDateTimeGetter.class, marshaled);
-		assertThat(unmarshaled, is(myObject));
+		assertThat(unmarshaled, equalTo(myObject));
 	}
 
 		@Test

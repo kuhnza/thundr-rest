@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.threewks.thundr.rest.serializer;
+package com.threewks.thundr.rest.serializer.xml;
 
 
+import com.threewks.thundr.rest.serializer.json.JsonSerializer;
+import com.threewks.thundr.rest.serializer.Serializer;
 import net.sf.json.JSON;
 import net.sf.json.xml.XMLSerializer;
 

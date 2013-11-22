@@ -22,6 +22,7 @@ import com.threewks.thundr.http.exception.HttpStatusException;
 import com.threewks.thundr.rest.RestView;
 import com.threewks.thundr.rest.RestViewResolver;
 import com.threewks.thundr.rest.dto.ErrorDto;
+import com.threewks.thundr.rest.serializer.json.JsonSerializer;
 import com.threewks.thundr.test.mock.servlet.MockHttpServletRequest;
 import com.threewks.thundr.test.mock.servlet.MockHttpServletResponse;
 import org.junit.Assert;
@@ -78,7 +79,7 @@ public class RestActionInterceptorTest {
 	@Test
 	public void shouldSerializeRestViewErrors() {
 		RestViewResolver resolver = new RestViewResolver();
-		resolver.addSerializer("application/json", new com.threewks.thundr.rest.serializer.JsonSerializer());
+		resolver.addSerializer("application/json", new JsonSerializer());
 
 		RestActionInterceptor interceptor = new RestActionInterceptor(new RestViewResolver());
 		Exception exception = new RuntimeException("Intentional");
