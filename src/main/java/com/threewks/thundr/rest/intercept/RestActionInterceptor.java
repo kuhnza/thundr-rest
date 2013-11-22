@@ -50,13 +50,17 @@ public class RestActionInterceptor implements ActionInterceptor<Rest> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T exception(Rest annotation, Exception e, HttpServletRequest req, HttpServletResponse res) {
-		int status = (e instanceof HttpStatusException) ?
-				((HttpStatusException) e).getStatus() :
-				HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+		HttpStatusException statusException;
+		if (e instanceof  HttpStatusException) {
+			statusException = (HttpStatusException) e;
+		} else {
+			statusException = new HttpStatusException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error: %s", e.getMessage());
+		}
 
-		Logger.error("Unhandled exception in REST controller method: %s",
-				ExceptionUtils.getStackTrace(e));
+		String description = (statusException.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR) ?
+				ExceptionUtils.getStackTrace(e) : e.getMessage();
+		Logger.error("REST exception: %s - %s", statusException.getStatus(), description);
 
-		return (T) new RestView(new ErrorDto(e.getMessage()), status);
+		return (T) new RestView(new ErrorDto(e.getMessage()), statusException.getStatus());
 	}
 }
