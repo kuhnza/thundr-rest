@@ -18,7 +18,7 @@
 package com.threewks.thundr.rest;
 
 import com.threewks.thundr.action.method.ActionInterceptorRegistry;
-import com.threewks.thundr.injection.InjectionConfiguration;
+import com.threewks.thundr.injection.BaseInjectionConfiguration;
 import com.threewks.thundr.injection.UpdatableInjectionContext;
 import com.threewks.thundr.rest.intercept.Rest;
 import com.threewks.thundr.rest.intercept.RestActionInterceptor;
@@ -27,8 +27,7 @@ import com.threewks.thundr.rest.serializer.xml.XmlSerializer;
 import com.threewks.thundr.view.ViewResolverRegistry;
 import jodd.util.MimeTypes;
 
-public class RestInjectionConfiguration implements InjectionConfiguration {
-
+public class RestInjectionConfiguration extends BaseInjectionConfiguration {
 	@Override
 	public void configure(UpdatableInjectionContext injectionContext) {
 		ViewResolverRegistry viewResolverRegistry = injectionContext.get(ViewResolverRegistry.class);

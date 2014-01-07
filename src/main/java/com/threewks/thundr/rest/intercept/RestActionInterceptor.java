@@ -43,7 +43,7 @@ public class RestActionInterceptor implements ActionInterceptor<Rest> {
 	}
 
 	@Override
-	public <T> T after(Rest annotation, HttpServletRequest req, HttpServletResponse res) {
+	public <T> T after(Rest annotation, Object view, HttpServletRequest req, HttpServletResponse resp) {
 		return null;
 	}
 
