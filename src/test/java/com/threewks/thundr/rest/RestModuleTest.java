@@ -29,24 +29,24 @@ import org.mockito.Matchers;
 
 import static org.mockito.Mockito.*;
 
-public class RestInjectionConfigurationTest {
+public class RestModuleTest {
 
-	private UpdatableInjectionContext injectionContext = new InjectionContextImpl();
+	private UpdatableInjectionContext module = new InjectionContextImpl();
 
 	@Before
 	public void setup() {
 		ViewResolverRegistry viewResolverRegistry = mock(ViewResolverRegistry.class);
-		injectionContext.inject(viewResolverRegistry).as(ViewResolverRegistry.class);
+		module.inject(viewResolverRegistry).as(ViewResolverRegistry.class);
 
 		ActionInterceptorRegistry actionInterceptorRegistry = mock(ActionInterceptorRegistry.class);
-		injectionContext.inject(actionInterceptorRegistry).as(ActionInterceptorRegistry.class);
+		module.inject(actionInterceptorRegistry).as(ActionInterceptorRegistry.class);
 
-		new RestInjectionConfiguration().configure(injectionContext);
+		new RestModule().configure(module);
 	}
 
 	@Test
 	public void shouldInjectRestViewResolver() {
-		ViewResolverRegistry registry = injectionContext.get(ViewResolverRegistry.class);
+		ViewResolverRegistry registry = module.get(ViewResolverRegistry.class);
 		verify(registry).addResolver(
 				Matchers.eq(RestView.class),
 				Matchers.any(RestViewResolver.class));
@@ -54,7 +54,7 @@ public class RestInjectionConfigurationTest {
 
 	@Test
 	public void shouldInjectRestActionInterceptor() {
-		ActionInterceptorRegistry registry = injectionContext.get(ActionInterceptorRegistry.class);
+		ActionInterceptorRegistry registry = module.get(ActionInterceptorRegistry.class);
 		verify(registry).registerInterceptor(
 				Matchers.eq(Rest.class),
 				Matchers.any(RestActionInterceptor.class));
