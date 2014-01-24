@@ -22,27 +22,26 @@ import com.threewks.thundr.view.View;
 
 import javax.servlet.http.HttpServletResponse;
 
-public class RestView implements View {
-
-	private Object output;
+public class RestView<T> implements View {
+	private T output;
 	private int status;
 	private String characterEncoding;
 
-	public RestView(Object output) {
+	public RestView(T output) {
 		this(output, HttpServletResponse.SC_OK);
 	}
 
-	public RestView(Object output, int status) {
+	public RestView(T output, int status) {
 		this(output, status, Charsets.UTF_8.toString());
 	}
 
-	public RestView(Object output, int status, String characterEncoding) {
+	public RestView(T output, int status, String characterEncoding) {
 		this.output = output;
 		this.status = status;
 		this.characterEncoding = characterEncoding;
 	}
 
-	public Object getOutput() {
+	public T getOutput() {
 		return output;
 	}
 
