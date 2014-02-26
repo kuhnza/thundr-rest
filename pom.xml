@@ -9,7 +9,7 @@
 
 	<artifactId>thundr-rest</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<name>thundr-rest</name>
 	<url>http://github.com/3wks/thundr-rest/</url>
